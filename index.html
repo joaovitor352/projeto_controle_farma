@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FarmaCheck</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f2f2f2;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #e0e0e0;
+            padding: 10px;
+        }
+
+        .menu button {
+            margin: 5px;
+            padding: 10px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .menu button:hover {
+            background-color: #0056b3;
+        }
+
+        .sub-menu {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .sub-menu button {
+            margin: 3px;
+            padding: 6px 14px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .secao {
+            display: none;
+            padding: 20px;
+        }
+
+        .mostrar {
+            display: block;
+        }
+
+        .alerta {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .alerta img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .busca {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .busca input {
+            padding: 10px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        @media (max-width: 600px) {
+
+            .menu,
+            .sub-menu {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .menu button,
+            .sub-menu button {
+                width: 90%;
+                font-size: 16px;
+            }
+
+            .alerta {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>FarmaCheck</h1>
+        <p>Sistema de Verificação de Validade</p>
+    </header>
+
+    <div class="menu">
+        <button onclick="mostrarSecao('Medicamentos')">Medicamentos</button>
+        <button onclick="mostrarSecao('Vitaminas')">Vitaminas</button>
+        <button onclick="mostrarSecao('Cosméticos')">Cosméticos</button>
+        <button onclick="mostrarSecao('Higiene')">Higiene</button>
+    </div>
+
+    <div id="submenu-Medicamentos" class="sub-menu">
+        <button onclick="mostrarProdutosCategoria('Genérico')">Genéricos</button>
+        <button onclick="mostrarProdutosCategoria('Similar')">Similares</button>
+        <button onclick="mostrarProdutosCategoria('Estimulante')">Estimulantes</button>
+        <button onclick="mostrarProdutosCategoria('Referência')">Referência</button>
+    </div>
+
+    <div class="busca">
+        <input type="text" id="busca-produtos" placeholder="Buscar produto..." oninput="mostrarProdutos(this.value)" />
+    </div>
+
+    <div id="secao-Medicamentos" class="secao"></div>
+    <div id="secao-Vitaminas" class="secao"></div>
+    <div id="secao-Cosméticos" class="secao"></div>
+    <div id="secao-Higiene" class="secao"></div>
+
+    <script>
+        const hoje = new Date();
+
+        const produtos = [
+            // Medicamentos
+            { nome: "Dipirona Genérico", validade: "2025-08-15", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Dipirona+Genérico", codigoDeBarras: "1111111111111" },
+            { nome: "Paracetamol Similar", validade: "2025-10-12", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Paracetamol+Similar", codigoDeBarras: "2222222222222" },
+            { nome: "Dorflex Estimulante", validade: "2025-09-05", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Dorflex+Estimulante", codigoDeBarras: "3333333333333" },
+            { nome: "Neosaldina Referência", validade: "2025-11-20", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Neosaldina+Referência", codigoDeBarras: "4444444444444" },
+            { nome: "Ibuprofeno Genérico", validade: "2026-01-10", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Ibuprofeno+Genérico", codigoDeBarras: "5555555555555" },
+            { nome: "Amoxicilina Similar", validade: "2025-12-25", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Amoxicilina+Similar", codigoDeBarras: "6666666666666" },
+            { nome: "Omeprazol Referência", validade: "2026-03-30", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Omeprazol+Referência", codigoDeBarras: "7777777777777" },
+            { nome: "Buscopan Estimulante", validade: "2025-10-10", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Buscopan+Estimulante", codigoDeBarras: "8888888888888" },
+            { nome: "Cimegripe Similar", validade: "2025-12-01", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Cimegripe+Similar", codigoDeBarras: "9999999999999" },
+            { nome: "Antigripal Genérico", validade: "2025-09-20", secao: "Medicamentos", imagem: "https://via.placeholder.com/300x120?text=Antigripal+Genérico", codigoDeBarras: "0000000000000" },
+
+            // Vitaminas
+            { nome: "Vitamina C 1g", validade: "2026-02-10", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Vitamina+C", codigoDeBarras: "1234567890123" },
+            { nome: "Multivitamínico A-Z", validade: "2026-03-15", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Multivitamínico", codigoDeBarras: "2345678901234" },
+            { nome: "Vitamina D 2000UI", validade: "2026-01-20", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Vitamina+D", codigoDeBarras: "3456789012345" },
+            { nome: "Ômega 3", validade: "2026-04-01", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Ômega+3", codigoDeBarras: "4567890123456" },
+            { nome: "Zinco Quelado", validade: "2026-05-10", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Zinco", codigoDeBarras: "5678901234567" },
+            { nome: "Magnésio Dimalato", validade: "2026-06-01", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Magnésio", codigoDeBarras: "6789012345678" },
+            { nome: "Vitamina B12", validade: "2026-07-12", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Vitamina+B12", codigoDeBarras: "7890123456789" },
+            { nome: "Biotina", validade: "2026-08-20", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Biotina", codigoDeBarras: "8901234567890" },
+            { nome: "Colágeno Hidrolisado", validade: "2026-09-25", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Colágeno", codigoDeBarras: "9012345678901" },
+            { nome: "Vitamina E", validade: "2026-10-30", secao: "Vitaminas", imagem: "https://via.placeholder.com/300x120?text=Vitamina+E", codigoDeBarras: "0123456789012" },
+
+            // Cosméticos
+            { nome: "Creme Hidratante Nivea", validade: "2026-01-15", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Hidratante+Nivea", codigoDeBarras: "1010101010101" },
+            { nome: "Protetor Solar FPS 50", validade: "2026-03-10", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Protetor+Solar", codigoDeBarras: "2020202020202" },
+            { nome: "Batom Vermelho Intenso", validade: "2026-02-20", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Batom+Vermelho", codigoDeBarras: "3030303030303" },
+            { nome: "Base Líquida Bege Médio", validade: "2026-04-01", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Base+Líquida", codigoDeBarras: "4040404040404" },
+            { nome: "Demaquilante Oil Free", validade: "2026-03-25", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Demaquilante", codigoDeBarras: "5050505050505" },
+            { nome: "Esmalte Nude", validade: "2026-05-15", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Esmalte+Nude", codigoDeBarras: "6060606060606" },
+            { nome: "Perfume Floral", validade: "2026-06-10", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Perfume+Floral", codigoDeBarras: "7070707070707" },
+            { nome: "Creme Anti-idade", validade: "2026-07-01", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Anti-idade", codigoDeBarras: "8080808080808" },
+            { nome: "Máscara Facial Argila", validade: "2026-08-12", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Máscara+Facial", codigoDeBarras: "9090909090909" },
+            { nome: "Desodorante Spray Feminino", validade: "2026-09-20", secao: "Cosméticos", imagem: "https://via.placeholder.com/300x120?text=Desodorante+Feminino", codigoDeBarras: "1122334455667" },
+
+            // Higiene
+            { nome: "Sabonete Antisséptico", validade: "2026-01-15", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Sabonete", codigoDeBarras: "1212121212121" },
+            { nome: "Shampoo Anticaspa", validade: "2026-03-01", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Shampoo+Anticaspa", codigoDeBarras: "2323232323232" },
+            { nome: "Condicionador Nutritivo", validade: "2026-02-10", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Condicionador", codigoDeBarras: "3434343434343" },
+            { nome: "Sabonete Íntimo", validade: "2026-03-25", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Sabonete+Íntimo", codigoDeBarras: "4545454545454" },
+            { nome: "Papel Higiênico Neutro", validade: "2026-04-15", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Papel+Higiênico", codigoDeBarras: "5656565656565" },
+            { nome: "Escova Dental", validade: "2026-05-10", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Escova+Dental", codigoDeBarras: "6767676767676" },
+            { nome: "Fio Dental", validade: "2026-06-20", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Fio+Dental", codigoDeBarras: "7878787878787" },
+            { nome: "Enxaguante Bucal", validade: "2026-07-12", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Enxaguante+Bucal", codigoDeBarras: "8989898989898" },
+            { nome: "Lenços Umedecidos", validade: "2026-08-01", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Lenços+Umedecidos", codigoDeBarras: "9090909090900" },
+            { nome: "Sabonete Líquido Neutro", validade: "2026-09-10", secao: "Higiene", imagem: "https://via.placeholder.com/300x120?text=Sabonete+Líquido", codigoDeBarras: "1011121314151" },
+
+        ];
+
+        function mostrarSecao(secaoId) {
+            document.querySelectorAll('.secao').forEach(secao => secao.classList.remove('mostrar'));
+            document.querySelectorAll('.sub-menu').forEach(sub => sub.style.display = "none");
+
+            const secaoAtual = document.getElementById(`secao-${secaoId}`);
+            if (secaoAtual) secaoAtual.classList.add('mostrar');
+
+            if (secaoId === "Medicamentos") {
+                document.getElementById("submenu-Medicamentos").style.display = "block";
+            }
+
+            const textoBusca = document.getElementById("busca-produtos").value.trim();
+            mostrarProdutos(textoBusca);
+        }
+
+        function mostrarProdutos(filtro = "") {
+            document.querySelectorAll('.secao').forEach(secao => secao.innerHTML = "");
+
+            produtos.forEach(produto => {
+                const dataValidade = new Date(produto.validade);
+                const diffDias = Math.ceil((dataValidade - hoje) / (1000 * 60 * 60 * 24));
+                const nomeLower = produto.nome.toLowerCase();
+                const filtroLower = filtro.toLowerCase();
+
+                if (diffDias >= 0 && nomeLower.includes(filtroLower)) {
+                    const secaoDiv = document.getElementById(`secao-${produto.secao}`);
+                    if (secaoDiv) {
+                        const alerta = document.createElement("div");
+                        alerta.className = "alerta";
+                        alerta.innerHTML = `
+              <img src="${produto.imagem}" alt="${produto.nome}">
+              <h3>${produto.nome}</h3>
+              <p><strong>Código de Barras:</strong> ${produto.codigoDeBarras}</p>
+              <p><strong>Validade:</strong> ${produto.validade}</p>
+              <p style="color:red;"><strong>⚠ Faltam ${diffDias} dia(s) para vencer!</strong></p>
+            `;
+                        secaoDiv.appendChild(alerta);
+                    }
+                }
+            });
+        }
+
+        function mostrarProdutosCategoria(categoria) {
+            const secaoDiv = document.getElementById("secao-Medicamentos");
+            secaoDiv.innerHTML = `<h2>Medicamentos - ${categoria}</h2>`;
+
+            produtos.forEach(produto => {
+                const dataValidade = new Date(produto.validade);
+                const diffDias = Math.ceil((dataValidade - hoje) / (1000 * 60 * 60 * 24));
+                const pertenceCategoria = produto.nome.toLowerCase().includes(categoria.toLowerCase());
+
+                if (produto.secao === "Medicamentos" && pertenceCategoria && diffDias >= 0) {
+                    const alerta = document.createElement("div");
+                    alerta.className = "alerta";
+                    alerta.innerHTML = `
+            <img src="${produto.imagem}" alt="${produto.nome}">
+            <h3>${produto.nome}</h3>
+            <p><strong>Código de Barras:</strong> ${produto.codigoDeBarras}</p>
+            <p><strong>Validade:</strong> ${produto.validade}</p>
+            <p style="color:red;"><strong>⚠ Faltam ${diffDias} dia(s) para vencer!</strong></p>
+          `;
+                    secaoDiv.appendChild(alerta);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
